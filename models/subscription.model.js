@@ -57,7 +57,6 @@ const subscriptionSchema = new mongoose.Schema(
     },
     renewalDate: {
       type: Date,
-      require: [true, "Start date is required"],
       validate: {
         validator: function (value) {
           return value > this.startDate;
@@ -74,3 +73,26 @@ const subscriptionSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+// Auto calculate renewal date
+
+subscriptionSchema.pre("save", function (next) {
+  if (!this.renewalDate) {
+    const renewalPeriod = {
+      daily: 1,
+      weekly: 7,
+      monthly: 30,
+      yearly: 365,
+    };
+    this.renewalDate = new Date(this.startDate);
+    this.renewalDate.setDate(
+      this.startDate.getDate() + renewalPeriod[this.frequency]
+    );
+  }
+
+  if (this.renewalDate < new Date()) {
+    this.status = "expired";
+  }
+
+  next();
+});
