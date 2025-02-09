@@ -1,4 +1,6 @@
 import express from "express";
+import cookieParser from "cookie-parser";
+
 import { PORT } from "./config/env.js";
 
 import userRouter from "./routes/user.routes.js";
@@ -8,6 +10,10 @@ import connectToDatabase from "./db/mongodb.js";
 import errorMiddleware from "./middleware/error.middleware.js";
 
 const app = express();
+
+app.use(cookieParser());
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
 
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/users", userRouter);
