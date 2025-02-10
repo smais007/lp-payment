@@ -75,7 +75,6 @@ const subscriptionSchema = new mongoose.Schema(
 );
 
 // Auto calculate renewal date
-
 subscriptionSchema.pre("save", function (next) {
   if (!this.renewalDate) {
     const renewalPeriod = {
